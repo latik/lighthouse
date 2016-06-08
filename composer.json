@@ -34,6 +34,7 @@
         "illuminate/routing": "^5.2",
         "illuminate/http": "^5.2",
         "illuminate/console": "^5.2",
-        "illuminate/pagination": "^5.2"
+        "illuminate/pagination": "^5.2",
+        "react/promise": "^2.4"
     }
 }
