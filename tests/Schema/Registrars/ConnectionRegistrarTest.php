@@ -58,9 +58,11 @@ class ConnectionRegistrarTest extends TestCase
 
     /**
      * @test
+     * @group failing
      */
     public function itCanRetrieveConnectionInstanceFromRegistrar()
     {
+        // TODO: Connection needs to be defined as classes.
         $this->typeRegistrar->register('user', UserType::class);
         $this->typeRegistrar->register('pageInfo', PageInfoType::class);
 

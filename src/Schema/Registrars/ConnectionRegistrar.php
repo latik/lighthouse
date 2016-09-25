@@ -52,19 +52,15 @@ class ConnectionRegistrar extends BaseRegistrar
      */
     public function instance($name, $parent = null, $fresh = false)
     {
-        $instanceName = $this->instanceName($name);
-        $typeName = $this->typeName($name);
-
-        if (! $fresh && $this->instances->has($instanceName)) {
-            return $this->instances->get($instanceName);
+        if (! $fresh && $this->instances->has($name)) {
+            return $this->instances->get($name);
         }
 
-        $key = $parent ? $parent.'.'.$instanceName : $instanceName;
-        $nodeType = $this->getSchema()->typeInstance($typeName);
-        $instance = $this->getInstance($name, $nodeType);
+        $connection = app($name);
+        $nodeType = $this->getSchema()->typeInstance($connection->type());
+        $instance = $this->getInstance($connection, $nodeType)->field();
 
-        $this->instances->put($key, $instance);
-
+        $this->instances->put($name, $instance);
         return $instance;
     }
 
