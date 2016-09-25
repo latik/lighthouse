@@ -120,9 +120,24 @@ class GraphQL
      * @param  bool $fresh
      * @return ObjectType
      */
-    public function type($name, $fresh = false)
+    public function ofType($name, $fresh = false)
     {
         return $this->schema()->typeInstance($name, $fresh);
+    }
+
+    /**
+     * Get type field.
+     *
+     * @param  string $name
+     * @param  array $config
+     * @param  bool $fresh
+     * @return array
+     */
+    public function type($name, $config = [], $fresh = false)
+    {
+        return array_merge([
+            'type' => $this->schema()->typeInstance($name, $fresh),
+        ], $config);
     }
 
     /**

@@ -39,7 +39,7 @@ class NodeType extends GraphQLInterface
      */
     public function resolveType($obj)
     {
-        return app('graphql')->type($this->extractType($obj));
+        return app('graphql')->ofType($this->extractType($obj));
     }
 
     /**

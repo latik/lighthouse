@@ -85,7 +85,7 @@ class EdgeRegistrar extends BaseRegistrar
      */
     protected function createEdge(ConnectionEdge $edge)
     {
-        $graphqlType = app('graphql')->type($edge->type());
+        $graphqlType = app('graphql')->ofType($edge->type());
 
         return new EdgeField([
             'type' => $this->createInstance($edge->name(), $graphqlType),

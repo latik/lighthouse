@@ -14,7 +14,7 @@ class NodeQuery extends GraphQLQuery
      */
     public function type()
     {
-        return app('graphql')->type('node');
+        return app('graphql')->ofType('node');
     }
 
     /**
@@ -44,7 +44,7 @@ class NodeQuery extends GraphQLQuery
     {
         list($typeClass, $id) = $this->decodeGlobalId($args['id']);
 
-        return app('graphql')->types()->filter(function ($type) use ($typeClass) {
+        return app('graphql')->ofTypes()->filter(function ($type) use ($typeClass) {
             return $typeClass === $type->namespace;
         })->transform(function ($type, $name) use ($id) {
             $model = app($type->namespace)->resolveById($id);
