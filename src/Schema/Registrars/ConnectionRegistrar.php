@@ -2,7 +2,6 @@
 
 namespace Nuwave\Lighthouse\Schema\Registrars;
 
-use ReflectionClass;
 use GraphQL\Type\Definition\ObjectType;
 use Nuwave\Lighthouse\Support\Definition\RelayConnectionType;
 use Nuwave\Lighthouse\Support\Definition\Fields\ConnectionField;
