@@ -4,7 +4,6 @@ namespace Nuwave\Lighthouse\Schema\Registrars;
 
 use ReflectionClass;
 use GraphQL\Type\Definition\ObjectType;
-use GraphQL\Type\Definition\InterfaceType;
 use Nuwave\Lighthouse\Support\Definition\RelayConnectionType;
 use Nuwave\Lighthouse\Support\Definition\Fields\ConnectionField;
 use Nuwave\Lighthouse\Support\Interfaces\Connection;
@@ -86,17 +85,11 @@ class ConnectionRegistrar extends BaseRegistrar
         $connection->setPageInfoType($pageInfoType);
         $instance = $connection->toType();
 
-        $field = new ConnectionField([
+        return new ConnectionField([
             'args'    => $isConnection ? array_merge($name->args(), RelayConnectionType::connectionArgs()) : RelayConnectionType::connectionArgs(),
             'type'    => $instance,
             'resolve' => $isConnection ? array($name, 'resolve') : null
         ]);
-
-        if ($connection->interfaces) {
-            InterfaceType::addImplementationToInterfaces($instance);
-        }
-
-        return $field;
     }
 
     /**
