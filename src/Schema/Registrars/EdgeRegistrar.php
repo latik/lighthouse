@@ -48,26 +48,21 @@ class EdgeRegistrar extends BaseRegistrar
      */
     public function instance($name, $fresh = false, ObjectType $type = null)
     {
-        $instanceName = $this->instanceName($name);
-
-        if (! $fresh && $this->instances->has($instanceName)) {
-            return $this->instances->get($instanceName);
+        if (! $fresh && $this->instances->has($name)) {
+            return $this->instances->get($name);
         }
 
-        if ($name instanceof ConnectionEdge) {
-            $instance = $this->createEdge($name);
-            $this->instances->put($instanceName, $instance);
-
-            return $instance;
-        } elseif ($type) {
+        if ($type) {
             $instance = $this->createInstance($name, $type);
-
             $this->instances->put($name, $instance);
 
             return $instance;
         }
 
-        return null;
+        $instance = $this->createEdge(app($name))->field();
+        $this->instances->put($name, $instance);
+
+        return $instance;
     }
 
     /**
