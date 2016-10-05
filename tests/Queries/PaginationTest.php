@@ -95,87 +95,87 @@ class PaginationTest extends DBTestCase
         $this->assertEquals(3, array_get($data, 'data.node.tasks.pageInfo.currentPage'));
         $this->assertEquals(3, array_get($data, 'data.node.tasks.pageInfo.lastPage'));
     }
-
-    /**
-     * @test
-     */
-    public function itCanPaginateConnectionWithCollection()
-    {
-        $id = $this->encodeGlobalId(UserStubCollectionType::class, $this->user->id);
-        $first = 2;
-        $query = $this->getQuery($id, $first);
-
-        $graphql = app('graphql');
-        $graphql->schema()->type('user', UserStubCollectionType::class);
-        $graphql->schema()->type('task', TaskStubType::class);
-
-        $data = $this->executeQuery($query);
-        $edges = array_get($data, 'data.node.tasks.edges');
-
-        $this->assertCount(2, $edges);
-        $this->assertEquals($this->tasks->get(0)->title, array_get($edges, '0.node.title'));
-        $this->assertEquals($this->tasks->get(1)->title, array_get($edges, '1.node.title'));
-        $this->assertNotNull(array_get($edges, '1.cursor'));
-
-        $after = array_get($edges, '1.cursor');
-        $query = $this->getQuery($id, $first, $after);
-        $data = $this->executeQuery($query);
-        $edges = array_get($data, 'data.node.tasks.edges');
-
-        $this->assertCount(2, $edges);
-        $this->assertEquals($this->tasks->get(2)->title, array_get($edges, '0.node.title'));
-        $this->assertEquals($this->tasks->get(3)->title, array_get($edges, '1.node.title'));
-
-        $after = array_get($edges, '1.cursor');
-        $query = $this->getQuery($id, $first, $after);
-        $data = $this->executeQuery($query);
-        $edges = array_get($data, 'data.node.tasks.edges');
-
-        $this->assertCount(2, $edges);
-        $this->assertEquals($this->tasks->get(4)->title, array_get($edges, '0.node.title'));
-        $this->assertEquals($this->tasks->get(5)->title, array_get($edges, '1.node.title'));
-    }
-
-    /**
-     * @test
-     * @group failing
-     */
-    public function itCanPaginateConnectionWithConnectionType()
-    {
-        $id = $this->encodeGlobalId(UserStubConnectionType::class, $this->user->id);
-        $first = 2;
-        $query = $this->getQuery($id, $first);
-
-        $graphql = app('graphql');
-        $graphql->schema()->type('user', UserStubConnectionType::class);
-        $graphql->schema()->type('task', TaskStubType::class);
-
-        $data = $this->executeQuery($query);
-        $edges = array_get($data, 'data.node.tasks.edges');
-
-        $this->assertCount(2, $edges);
-        $this->assertEquals($this->tasks->get(0)->title, array_get($edges, '0.node.title'));
-        $this->assertEquals($this->tasks->get(1)->title, array_get($edges, '1.node.title'));
-        $this->assertNotNull(array_get($edges, '1.cursor'));
-
-        $after = array_get($edges, '1.cursor');
-        $query = $this->getQuery($id, $first, $after);
-        $data = $this->executeQuery($query);
-        $edges = array_get($data, 'data.node.tasks.edges');
-
-        $this->assertCount(2, $edges);
-        $this->assertEquals($this->tasks->get(2)->title, array_get($edges, '0.node.title'));
-        $this->assertEquals($this->tasks->get(3)->title, array_get($edges, '1.node.title'));
-
-        $after = array_get($edges, '1.cursor');
-        $query = $this->getQuery($id, $first, $after);
-        $data = $this->executeQuery($query);
-        $edges = array_get($data, 'data.node.tasks.edges');
-
-        $this->assertCount(2, $edges);
-        $this->assertEquals($this->tasks->get(4)->title, array_get($edges, '0.node.title'));
-        $this->assertEquals($this->tasks->get(5)->title, array_get($edges, '1.node.title'));
-    }
+    //
+    // /**
+    //  * @test
+    //  */
+    // public function itCanPaginateConnectionWithCollection()
+    // {
+    //     $id = $this->encodeGlobalId(UserStubCollectionType::class, $this->user->id);
+    //     $first = 2;
+    //     $query = $this->getQuery($id, $first);
+    //
+    //     $graphql = app('graphql');
+    //     $graphql->schema()->type('user', UserStubCollectionType::class);
+    //     $graphql->schema()->type('task', TaskStubType::class);
+    //
+    //     $data = $this->executeQuery($query);
+    //     $edges = array_get($data, 'data.node.tasks.edges');
+    //
+    //     $this->assertCount(2, $edges);
+    //     $this->assertEquals($this->tasks->get(0)->title, array_get($edges, '0.node.title'));
+    //     $this->assertEquals($this->tasks->get(1)->title, array_get($edges, '1.node.title'));
+    //     $this->assertNotNull(array_get($edges, '1.cursor'));
+    //
+    //     $after = array_get($edges, '1.cursor');
+    //     $query = $this->getQuery($id, $first, $after);
+    //     $data = $this->executeQuery($query);
+    //     $edges = array_get($data, 'data.node.tasks.edges');
+    //
+    //     $this->assertCount(2, $edges);
+    //     $this->assertEquals($this->tasks->get(2)->title, array_get($edges, '0.node.title'));
+    //     $this->assertEquals($this->tasks->get(3)->title, array_get($edges, '1.node.title'));
+    //
+    //     $after = array_get($edges, '1.cursor');
+    //     $query = $this->getQuery($id, $first, $after);
+    //     $data = $this->executeQuery($query);
+    //     $edges = array_get($data, 'data.node.tasks.edges');
+    //
+    //     $this->assertCount(2, $edges);
+    //     $this->assertEquals($this->tasks->get(4)->title, array_get($edges, '0.node.title'));
+    //     $this->assertEquals($this->tasks->get(5)->title, array_get($edges, '1.node.title'));
+    // }
+    //
+    // /**
+    //  * @test
+    //  * @group failing
+    //  */
+    // public function itCanPaginateConnectionWithConnectionType()
+    // {
+    //     $id = $this->encodeGlobalId(UserStubConnectionType::class, $this->user->id);
+    //     $first = 2;
+    //     $query = $this->getQuery($id, $first);
+    //
+    //     $graphql = app('graphql');
+    //     $graphql->schema()->type('user', UserStubConnectionType::class);
+    //     $graphql->schema()->type('task', TaskStubType::class);
+    //
+    //     $data = $this->executeQuery($query);
+    //     $edges = array_get($data, 'data.node.tasks.edges');
+    //
+    //     $this->assertCount(2, $edges);
+    //     $this->assertEquals($this->tasks->get(0)->title, array_get($edges, '0.node.title'));
+    //     $this->assertEquals($this->tasks->get(1)->title, array_get($edges, '1.node.title'));
+    //     $this->assertNotNull(array_get($edges, '1.cursor'));
+    //
+    //     $after = array_get($edges, '1.cursor');
+    //     $query = $this->getQuery($id, $first, $after);
+    //     $data = $this->executeQuery($query);
+    //     $edges = array_get($data, 'data.node.tasks.edges');
+    //
+    //     $this->assertCount(2, $edges);
+    //     $this->assertEquals($this->tasks->get(2)->title, array_get($edges, '0.node.title'));
+    //     $this->assertEquals($this->tasks->get(3)->title, array_get($edges, '1.node.title'));
+    //
+    //     $after = array_get($edges, '1.cursor');
+    //     $query = $this->getQuery($id, $first, $after);
+    //     $data = $this->executeQuery($query);
+    //     $edges = array_get($data, 'data.node.tasks.edges');
+    //
+    //     $this->assertCount(2, $edges);
+    //     $this->assertEquals($this->tasks->get(4)->title, array_get($edges, '0.node.title'));
+    //     $this->assertEquals($this->tasks->get(5)->title, array_get($edges, '1.node.title'));
+    // }
 
     /**
      * Get connection query.
@@ -238,12 +238,12 @@ class UserStubType extends GraphQLType implements RelayType
                 'type' => Type::string(),
                 'description' => 'Email of the user.'
             ],
-            'tasks' => GraphQL::connection('task')
-                ->resolve(function (User $user, array $args) {
-                    return Task::whereHas('user', function ($query) use ($user) {
-                        $query->where('id', $user->id);
-                    })->getConnection($args);
-                })->field()
+            'tasks' => GraphQL::connection(TaskConnection::class)
+                // ->resolve(function (User $user, array $args) {
+                //     return Task::whereHas('user', function ($query) use ($user) {
+                //         $query->where('id', $user->id);
+                //     })->getConnection($args);
+                // })->field()
         ];
     }
 }
@@ -271,10 +271,10 @@ class UserStubCollectionType extends GraphQLType implements RelayType
                 'type' => Type::string(),
                 'description' => 'Email of the user.'
             ],
-            'tasks' => GraphQL::connection('task')
-                ->resolve(function (User $user, array $args) {
-                    return $user->tasks->paginate($args);
-                })->field()
+            'tasks' => GraphQL::connection(TaskConnection::class)
+                // ->resolve(function (User $user, array $args) {
+                //     return $user->tasks->paginate($args);
+                // })->field()
         ];
     }
 }
@@ -302,7 +302,7 @@ class UserStubConnectionType extends GraphQLType implements RelayType
                 'type' => Type::string(),
                 'description' => 'Email of the user.'
             ],
-            'tasks' => GraphQL::connection(new TaskConnection)->field()
+            'tasks' => GraphQL::connection(TaskConnection::class)
         ];
     }
 }
