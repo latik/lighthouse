@@ -67,9 +67,10 @@ class GraphQL
         // Initialize types
         $this->types()->each(function ($type, $key) {
             $type = $this->type($key);
+            $instance = is_array($type) ? $type['type'] : $type;
 
-            if (method_exists($type, 'getInterfaces') && !empty($type->getInterfaces())) {
-                $this->typesWithInterfaces->push($type);
+            if (method_exists($instance, 'getInterfaces') && !empty($instance->getInterfaces())) {
+                $this->typesWithInterfaces->push($instance);
             }
         });
 

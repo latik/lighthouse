@@ -147,11 +147,11 @@ class SchemaBuilder
      * Add cursor to registrar.
      *
      * @param  string  $name
-     * @param  Closure $encoder
-     * @param  Closure|null $decoder
+     * @param  callable $encoder
+     * @param  callable|null $decoder
      * @return bool
      */
-    public function cursor($name, Closure $encoder, Closure $decoder = null)
+    public function cursor($name, callable $encoder, callable $decoder = null)
     {
         return $this->getCursorRegistrar()->register($name, $encoder, $decoder);
     }

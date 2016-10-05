@@ -84,10 +84,16 @@ class ConnectionRegistrar extends BaseRegistrar
         $connection->setPageInfoType($pageInfoType);
         $instance = $connection->toType();
 
+        if ($isConnection && method_exists($name, 'encodeCursor')) {
+            $encoder = [$name, 'encodeCursor'];
+
+            app('graphql')->schema()->cursor($instance->name, [$name, 'encodeCursor']);
+        }
+
         return new ConnectionField([
             'args'    => $isConnection ? array_merge($name->args(), RelayConnectionType::connectionArgs()) : RelayConnectionType::connectionArgs(),
             'type'    => $instance,
-            'resolve' => $isConnection ? array($name, 'resolve') : null
+            'resolve' => $isConnection ? [$name, 'resolve'] : null,
         ]);
     }
 
