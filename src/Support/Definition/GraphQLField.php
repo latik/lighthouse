@@ -56,11 +56,12 @@ class GraphQLField extends Fluent
      */
     public function getAttributes()
     {
+        $type = $this->type();
         $attributes = array_merge($this->attributes, [
             'args' => $this->args()
         ], $this->attributes());
 
-        $attributes['type'] = $this->type();
+        $attributes['type'] = is_array($type) ? $type['type'] : $type;
         $attributes['resolve'] = $this->getResolver();
 
         return $attributes;

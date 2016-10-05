@@ -24,7 +24,7 @@ class GraphQLFileConfigTest extends TestCase
     public function itCanRegisterTypesWithSchemaFile()
     {
         $graphql = app('graphql');
-        $this->assertInstanceOf(ObjectType::class, $graphql->type('userConfig'));
+        $this->assertInstanceOf(ObjectType::class, $graphql->type('userConfig')['type']);
         $this->assertContains('userQueryConfig', $graphql->queries()->keys());
         $this->assertContains('updateEmailConfig', $graphql->mutations()->keys());
     }

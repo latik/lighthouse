@@ -38,10 +38,7 @@ class TaskType extends GraphQLType
                 'type' => Type::boolean(),
                 'description' => 'Completed status.'
             ],
-            'user' => [
-                'type' => GraphQL::type('user'),
-                'description' => 'User who owns task.',
-            ]
+            'user' => GraphQL::type('user')
         ];
     }
 }

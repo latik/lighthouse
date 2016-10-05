@@ -32,7 +32,7 @@ class GraphQLConfigTest extends TestCase
     public function itCanRegisterWithConfig()
     {
         $graphql = app('graphql');
-        $this->assertInstanceOf(ObjectType::class, $graphql->type('user'));
+        $this->assertInstanceOf(ObjectType::class, $graphql->type('user')['type']);
         $this->assertContains('userQuery', $graphql->queries()->keys());
         $this->assertContains('updateEmail', $graphql->mutations()->keys());
     }

@@ -4,6 +4,7 @@ namespace Nuwave\Tests\Queries;
 
 use GraphQL;
 use GraphQL\Type\Definition\Type;
+use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Tests\DBTestCase;
 use Nuwave\Lighthouse\Tests\Support\GraphQL\Types\TaskType;
 use Nuwave\Lighthouse\Tests\Support\Models\User;
@@ -11,6 +12,7 @@ use Nuwave\Lighthouse\Tests\Support\Models\Task;
 use Nuwave\Lighthouse\Support\Definition\GraphQLType;
 use Nuwave\Lighthouse\Support\Interfaces\RelayType;
 use Nuwave\Lighthouse\Support\Traits\GlobalIdTrait;
+use Nuwave\Lighthouse\Support\Interfaces\Connection;
 
 class AutoResolveTest extends DBTestCase
 {
@@ -108,7 +110,30 @@ class UserStubType extends GraphQLType implements RelayType
                 'type' => Type::string(),
                 'description' => 'Email of the user.'
             ],
-            'tasks' => GraphQL::connection('task')->field('tasks')
+            'tasks' => GraphQL::connection(TaskConnection::class)
         ];
+    }
+}
+
+class TaskConnection implements Connection
+{
+    public function name()
+    {
+        return 'UserTasks';
+    }
+
+    public function type()
+    {
+        return 'task';
+    }
+
+    public function args()
+    {
+        return [];
+    }
+
+    public function resolve($parent, array $args, $context, ResolveInfo $info)
+    {
+        return $parent->tasks()->getConnection($args);
     }
 }

@@ -9,6 +9,8 @@ use Nuwave\Lighthouse\Support\Definition\GraphQLType;
 use Nuwave\Lighthouse\Tests\DBTestCase;
 use Nuwave\Lighthouse\Tests\Support\Models\User;
 use Nuwave\Lighthouse\Tests\Support\Models\Task;
+use Nuwave\Lighthouse\Tests\Support\GraphQL\Connections\TaskConnection;
+use Nuwave\Lighthouse\Tests\Support\GraphQL\Connections\TaskCursorConnection;
 use Nuwave\Lighthouse\Support\Traits\GlobalIdTrait;
 
 class CursorTest extends DBTestCase
@@ -119,12 +121,14 @@ class UserCursorType extends GraphQLType implements RelayType
                 'type' => Type::string(),
                 'description' => 'Email of the user.'
             ],
-            'tasks' => GraphQL::connection('task')
-                ->resolve(function (User $user, array $args) {
-                    return $user->tasks->paginate($args);
-                })->cursor(function ($item, $index, $page) {
-                    return $index === 0 ? 'foo' : 'bar';
-                })->field()
+            // TODO: Convert to connection class and handle cursor.
+            'tasks' => GraphQL::connection(TaskCursorConnection::class)
+            // 'tasks' => GraphQL::connection('task')
+            //     ->resolve(function (User $user, array $args) {
+            //         return $user->tasks->paginate($args);
+            //     })->cursor(function ($item, $index, $page) {
+            //         return $index === 0 ? 'foo' : 'bar';
+            //     })->field()
         ];
     }
 }
