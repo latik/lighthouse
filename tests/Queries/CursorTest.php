@@ -9,7 +9,6 @@ use Nuwave\Lighthouse\Support\Definition\GraphQLType;
 use Nuwave\Lighthouse\Tests\DBTestCase;
 use Nuwave\Lighthouse\Tests\Support\Models\User;
 use Nuwave\Lighthouse\Tests\Support\Models\Task;
-use Nuwave\Lighthouse\Tests\Support\GraphQL\Connections\TaskConnection;
 use Nuwave\Lighthouse\Tests\Support\GraphQL\Connections\TaskCursorConnection;
 use Nuwave\Lighthouse\Support\Traits\GlobalIdTrait;
 

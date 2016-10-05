@@ -74,7 +74,7 @@ class ConnectionRegistrar extends BaseRegistrar
         $isConnection = $name instanceof Connection;
         $connection = new RelayConnectionType();
         $instanceName = $this->instanceName($name);
-        $connectionName = (!preg_match('/Connection$/', $instanceName)) ? $instanceName.'Connection' : $instanceName;
+        $connectionName = (!preg_match('/Connection$/i', $instanceName)) ? $instanceName.'Connection' : $instanceName;
         $connection->setName(studly_case($connectionName));
 
         $pageInfoType = $this->getSchema()->typeInstance('pageInfo');
@@ -85,8 +85,6 @@ class ConnectionRegistrar extends BaseRegistrar
         $instance = $connection->toType();
 
         if ($isConnection && method_exists($name, 'encodeCursor')) {
-            $encoder = [$name, 'encodeCursor'];
-
             app('graphql')->schema()->cursor($instance->name, [$name, 'encodeCursor']);
         }
 
