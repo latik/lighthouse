@@ -121,14 +121,7 @@ class UserCursorType extends GraphQLType implements RelayType
                 'type' => Type::string(),
                 'description' => 'Email of the user.'
             ],
-            // TODO: Convert to connection class and handle cursor.
             'tasks' => GraphQL::connection(TaskCursorConnection::class)
-            // 'tasks' => GraphQL::connection('task')
-            //     ->resolve(function (User $user, array $args) {
-            //         return $user->tasks->paginate($args);
-            //     })->cursor(function ($item, $index, $page) {
-            //         return $index === 0 ? 'foo' : 'bar';
-            //     })->field()
         ];
     }
 }
