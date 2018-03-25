@@ -62,6 +62,7 @@ class SchemaBuilder
 
         $this->setTypes($document);
         $this->extendTypes($document);
+        $this->injectNodeField();
 
         return collect($this->types);
     }
@@ -140,8 +141,12 @@ class SchemaBuilder
      */
     protected function setTypes(DocumentNode $document)
     {
+        $globalIdField = config('lighthouse.global_id_field');
+
         $types = collect($document->definitions)->reject(function ($node) {
             return $node instanceof TypeExtensionDefinitionNode;
+        })->reject(function ($node) use ($globalIdField) {
+            return is_null($globalIdField) && 'Node' == $node->name->value;
         })->map(function (Node $node) {
             return app(NodeFactory::class)->handle(new NodeValue($node));
         })->toArray();
@@ -164,8 +169,31 @@ class SchemaBuilder
             $name = $extension->definition->name->value;
 
             if ($type = collect($this->types)->firstWhere('name', $name)) {
-                app(NodeFactory::class)->extend($extension, $type);
+                $value = new NodeValue($extension);
+
+                app(NodeFactory::class)->handle($value->setType($type));
             }
         });
+    }
+
+    /**
+     * Inject node field into Query.
+     */
+    protected function injectNodeField()
+    {
+        if (is_null(config('lighthouse.global_id_field'))) {
+            return;
+        }
+
+        if (! $query = $this->instance('Query')) {
+            return;
+        }
+
+        $this->extendTypes($this->parseSchema('
+        extend type Query {
+            node(id: ID!): Node
+                @field(resolver: "Nuwave\\\Lighthouse\\\Support\\\Http\\\GraphQL\\\Queries\\\NodeQuery@resolve")
+        }
+        '));
     }
 }

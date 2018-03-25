@@ -30,6 +30,20 @@ class NodeValue
     protected $directive;
 
     /**
+     * Current namespace.
+     *
+     * @var string
+     */
+    protected $namespace;
+
+    /**
+     * Registered interfaces.
+     *
+     * @var array
+     */
+    protected $interfaces = [];
+
+    /**
      * Create new instance of node value.
      *
      * @param Node $node
@@ -47,6 +61,20 @@ class NodeValue
     public static function init(Node $node)
     {
         return new static($node);
+    }
+
+    /**
+     * Set current node instance.
+     *
+     * @param Node $node
+     *
+     * @return self
+     */
+    public function setNode(Node $node)
+    {
+        $this->node = $node;
+
+        return $this;
     }
 
     /**
@@ -71,6 +99,32 @@ class NodeValue
     public function setDirective(DirectiveNode $directive)
     {
         $this->directive = $directive;
+    }
+
+    /**
+     * Set the current namespace.
+     *
+     * @param string $namespace
+     */
+    public function setNamespace($namespace)
+    {
+        $this->namespace = $namespace;
+    }
+
+    /**
+     * Attach interface(s) to node.
+     *
+     * @param array|string $interface
+     *
+     * @return self
+     */
+    public function attachInterface($interface)
+    {
+        $interfaces = is_string($interface) ? [$interface] : $interface;
+
+        $this->interfaces = array_merge($this->interfaces, $interfaces);
+
+        return $this;
     }
 
     /**
@@ -104,6 +158,18 @@ class NodeValue
     }
 
     /**
+     * Get current namespace.
+     *
+     * @param string $class
+     *
+     * @return string
+     */
+    public function getNamespace($class = null)
+    {
+        return $class ? $this->namespace.'\\'.$class : $this->namespace;
+    }
+
+    /**
      * Get the name of the node.
      *
      * @return string
@@ -121,5 +187,41 @@ class NodeValue
     public function getNodeFields()
     {
         return data_get($this->getNode(), 'fields', []);
+    }
+
+    /**
+     * Get list of interfaces for node.
+     *
+     * @return array
+     */
+    public function getInterfaces()
+    {
+        return collect($this->node->interfaces)
+            ->map(function ($interface) {
+                return $interface->name->value;
+            })
+            ->merge($this->interfaces)
+            ->unique()
+            ->values()
+            ->toArray();
+    }
+
+    /**
+     * Check if node implements a interface.
+     *
+     * @param string $interface
+     *
+     * @return bool
+     */
+    public function hasInterface($interface)
+    {
+        return collect($this->node->interfaces)
+            ->reduce(function ($implements, $interfaceNode) use ($interface) {
+                if ($implements) {
+                    return true;
+                }
+
+                return data_get($interfaceNode, 'name.value') == $interface;
+            }, false);
     }
 }

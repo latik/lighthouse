@@ -15,13 +15,13 @@ use GraphQL\Type\Definition\InterfaceType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use Nuwave\Lighthouse\Schema\Resolvers\ScalarResolver;
-use Nuwave\Lighthouse\Schema\Values\FieldValue;
 use Nuwave\Lighthouse\Schema\Values\NodeValue;
 use Nuwave\Lighthouse\Support\Traits\HandlesDirectives;
+use Nuwave\Lighthouse\Support\Traits\HandlesTypes;
 
 class NodeFactory
 {
-    use HandlesDirectives;
+    use HandlesDirectives, HandlesTypes;
 
     /**
      * Transform node to type.
@@ -36,26 +36,8 @@ class NodeFactory
             ? $this->useResolver($value)
             : $this->transform($value);
 
-        return $this->applyMiddleware($value)->getType();
-    }
-
-    /**
-     * Extend type definition.
-     *
-     * @param Extension $extension
-     * @param Type      $type
-     *
-     * @return Type
-     */
-    public function extend(Extension $extension, Type $type)
-    {
-        $typeFields = value($type->config['fields']);
-        $extendedFields = $this->getFields(new NodeValue($extension->definition));
-        $type->config['fields'] = function () use ($typeFields, $extendedFields) {
-            return array_merge($typeFields, $extendedFields);
-        };
-
-        return $type;
+        return $this->applyMiddleware($this->attachInterfaces($value))
+            ->getType();
     }
 
     /**
@@ -103,6 +85,8 @@ class NodeFactory
                 return $this->objectType($value);
             case InputObjectTypeDefinitionNode::class:
                 return $this->inputObjectType($value);
+            case Extension::class:
+                return $this->extend($value);
             default:
                 throw new \Exception("Unknown node [{$value->getNodeName()}]");
         }
@@ -205,24 +189,44 @@ class NodeFactory
     }
 
     /**
-     * Get fields for node.
+     * Extend type definition.
      *
      * @param NodeValue $value
      *
-     * @return array
+     * @return NodeValue
      */
-    protected function getFields(NodeValue $value)
+    public function extend(NodeValue $value)
     {
-        $factory = $this->fieldFactory();
+        $value->setNode(
+            $value->getNode()->definition
+        );
 
-        return collect($value->getNodeFields())
-            ->mapWithKeys(function ($field) use ($factory, $value) {
-                $fieldValue = new FieldValue($value, $field);
+        $type = $value->getType();
+        $originalFields = value($type->config['fields']);
+        $type->config['fields'] = function () use ($originalFields, $value) {
+            return array_merge($originalFields, $this->getFields($value));
+        };
 
-                return [
-                    $fieldValue->getFieldName() => $factory->handle($fieldValue),
-                ];
-            })->toArray();
+        return $value;
+    }
+
+    /**
+     * Attach interfaces to type.
+     *
+     * @param NodeValue $value
+     *
+     * @return NodeValue
+     */
+    protected function attachInterfaces(NodeValue $value)
+    {
+        $type = $value->getType();
+        $type->config['interfaces'] = function () use ($value) {
+            return collect($value->getInterfaces())->map(function ($interface) {
+                return schema()->instance($interface);
+            })->filter()->toArray();
+        };
+
+        return $value;
     }
 
     /**
@@ -238,15 +242,5 @@ class NodeFactory
             ->reduce(function ($value, $middleware) {
                 return $middleware->handle($value);
             }, $value);
-    }
-
-    /**
-     * Get instance of field factory.
-     *
-     * @return FieldFactory
-     */
-    protected function fieldFactory()
-    {
-        return app(FieldFactory::class);
     }
 }

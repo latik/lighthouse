@@ -7,6 +7,7 @@ use GraphQL\Type\Schema;
 use Nuwave\Lighthouse\Schema\CacheManager;
 use Nuwave\Lighthouse\Schema\Factories\DirectiveFactory;
 use Nuwave\Lighthouse\Schema\MiddlewareManager;
+use Nuwave\Lighthouse\Schema\NodeContainer;
 use Nuwave\Lighthouse\Schema\SchemaBuilder;
 use Nuwave\Lighthouse\Schema\Utils\SchemaStitcher;
 use Nuwave\Lighthouse\Support\Traits\CanFormatError;
@@ -49,6 +50,21 @@ class GraphQL
      * @var SchemaStitcher
      */
     protected $stitcher;
+
+    /**
+     * GraphQL Schema.
+     *
+     * @var Schema
+     */
+    protected $graphqlSchema;
+
+    /**
+     * Prepare graphql schema.
+     */
+    public function prepSchema()
+    {
+        $this->graphqlSchema = $this->buildSchema();
+    }
 
     /**
      * Execute GraphQL query.
@@ -96,8 +112,10 @@ class GraphQL
      */
     public function queryAndReturnResult($query, $context = null, $variables = [], $rootValue = null)
     {
+        $schema = $this->graphqlSchema ?: $this->buildSchema();
+
         return GraphQLBase::executeAndReturnResult(
-            $this->buildSchema(),
+            $schema,
             $query,
             $rootValue,
             $context,
@@ -210,5 +228,22 @@ class GraphQL
         }
 
         return $this->stitcher;
+    }
+
+    /**
+     * Instance of Node container.
+     *
+     * @return NodeContainer
+     */
+    public function nodes()
+    {
+        if (! app()->has(NodeContainer::class)) {
+            return app()->instance(
+                NodeContainer::class,
+                resolve(NodeContainer::class)
+            );
+        }
+
+        return resolve(NodeContainer::class);
     }
 }
