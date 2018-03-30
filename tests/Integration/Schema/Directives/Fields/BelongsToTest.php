@@ -20,18 +20,18 @@ class BelongsToTest extends DBTestCase
     protected $user;
 
     /**
-     * User's company.
-     *
-     * @var Company
-     */
-    protected $company;
-
-    /**
      * User's team.
      *
      * @var Team
      */
     protected $team;
+
+    /**
+     * User's company.
+     *
+     * @var Company
+     */
+    protected $company;
 
     /**
      * Setup test environment.
